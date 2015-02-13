@@ -1,4 +1,4 @@
-Test of Preferential voting
+#+TITLE: Concerns about Preferential Voting
 
 * Preferential Voting Procedure
 
@@ -124,5 +124,49 @@ for breaking such ties.  But it does suggest one can remove all of the
 lowest ranking candidates such that their combined votes are less than
 the remaining other lowest candidates.  This doesn't solve the first
 scenario.
+
+
+
+** Pure email based variant
+
+Given that the time is short to do this vote it is worth pointing out
+that the voting procedure can be carried out with just a single person
+and their email client providing the role of the "PVS".  This approach
+creates an added burden on both the human taking on the role of the
+PVS and the individual voters.  In particular, the formatting of
+ballots must be correctly handled to assure reproducible hashes can be
+calculated and to allow for automated parsing to apply the vote
+algorithm.  Assistance can be had in the form of some scripts such as
+the ones provided in the [[https://github.com/brettviren/preferential-voting][repository]] associated with this note.
+
+This extra burden is maybe acceptable as it requires very little
+up-front effort compared to developing a new web application.  With
+the suggested process below the vote will be relatively secure from
+malicious intent or simple accidents although it requires the PVS
+agent to retain and handle information that associates a voter with
+their vote. They should take measures not to disclose this association
+if secret ballot is to be preserved.  In the following, "PVS" is the
+administrator of the voting.
+
+1) PVS sends email to each voter using their well known address (eg, the one registered in the [[https://lbne.bnl.gov/newcollab/][collaborator database]].
+
+2) The message includes a text file (ASCII encoding) attachment with the candidates arranged in alphabetical order, one candidate per line.
+
+3) The voter is instructed to edit this text file in order to reorder the candidates according to their desired ranking and return it as an ASCII encoded text file.
+
+4) The voter must also provide a /voter phrase/ in the return email.
+
+5) Upon receipt, the PVS will check that no ballot from this email address  has yet been received.  
+
+6) The PVS will save the returned text ballot to their secure disk and assure that the text file does not have any extraneous edits (this can be automated with a script).  If cosmetic edits are necessary to enforce proper format, they will be made by the PVS.
+
+7) The properly formatted /vote/ (as defined above) is produced based on this file (using an automated script), its /hash/ is calculated and the /hash/ + /candidate ranking/ strings are saved to the PVS's secure disk and are also returned to the voter.
+
+8) The voter may validate the hash.
+
+9) At close of voting all /hash/ + /candidate rankings/ are published to the collaboration.
+
+10) The PVS processes the vote and declares the winners.  Any in the collaboration may confirm the result using the published information.  Individual voters may confirm their vote is represented.
+
 
 
