@@ -1,0 +1,128 @@
+Test of Preferential voting
+
+* Preferential Voting Procedure
+
+From Chang Kee's ELBNF talk
+
+i) Voting will take place using a secret online ballot.
+
+ii) The election will use the Preferential Voting System (PVS),
+allowing the election to proceed in a single stage.
+
+iii) Each institute will provide a ballot paper giving a ranked list
+of all candidates standing.
+
+iv) For each institute, the top ranked choice receives one vote in
+each round of counting, the candidate with the fewest votes is
+eliminated from ballots tallied in each subsequent round of
+counting. If an institute’s top preferences is eliminated, their vote
+is transferred to their second preference, etc. The process of
+eliminating candidates continues until the top candidate receives a
+majority of the ballots cast.
+
+* Concerns
+
+This section gives some concerns over the preferential voting procedure as stated above.
+
+** Vote collecting
+
+Simply saying a "secret online ballot" leaves much to the imagination
+and is ripe for abuse, intentional or accidental.  It also says in iii
+that a ballot /paper/ is provided.  How "online" and "paper" is to
+work is a mystery.
+
+But, assuming the best, there are still some specific concerns:
+
+ - How to confirm that all ballots are accepted?
+ - How to confirm no error in ballot processing?
+ - How to assure only authorized voters participate?
+ - How to assure no double voting?
+
+*** Addressing the Concerns
+
+Ideally, public key cryptography (PGP) is used during submission of
+votes.  The ballot should be signed with the voter's private key and
+encrypted with the PVS's public key.  The public keys of eligible
+voters should be collected by the PVS in a manner that confirms the
+identity of the voter.
+
+However, it is expected that the entire electorate is not capable of
+dealing with this cryptography.  Instead a weaker approach is
+suggested which relies on the voter's "well known" email address as
+being a definitive identifier.  The procedure is thus:
+
+1) The PVS sends an /invitation/ email to the voter which contains a
+   unique user name, password and a PVS URL.
+
+2) The voter follows the URL and supplies the /username/ and
+   /password/ and the PVS authenticates the voter.
+
+3) Through a presented web form, the voter ranks the candidates by
+   assigning an integer value to each candidate (1..N, N=number of
+   candidates, 1=most desired).  The PVS performs input validation to
+   assure no duplication of rank and that all candidates are ranked.
+
+4) Through the form the voter must also supply a /voter phrase/
+   (an arbitrarily character string chosen by the voter).
+
+5) On submit of the form, the PVS creates a string termed the /vote/
+   which consists of a comma-separated list of the following elements,
+   in order:
+
+   - The voter's given /username/,
+   - The /voter phrase/.
+   - A comma-separated list of candidates (/candidate ranking/) in order of the voter's ranking.
+
+6) The PVS runs SHA1 hash function on the /vote/.  This is the /hash/.
+
+7) On response, the PVS presents the /vote/ and the /hash/ to the
+   voter and the voter is encouraged to make a copy.  The PVS also
+   sends this information to the voter's email address.
+
+8) The PVS permanently records the /vote/
+
+*** Discussion of this suggestion
+
+This addresses the concerns in the following way:
+
+- To the extent that the voter's email address is correct and
+  trustworthy a unique token is issued by the PVS to the voter in a
+  way that can not be trivially forged.
+
+- Subsequent attempts of a voter to vote will be blocked as the
+  initial /vote/ is contains the /username/
+
+- The associated /hash/ and /candidate ranking/ can be publicly
+  disclosed for all votes without breaking secret ballot.  This
+  allows:
+
+   - Confirmation by anyone that the outcome is fair as they can rerun the voting algorithm.
+   - Confirmation by any individual voter that their /vote/ was correctly accepted and used.
+
+
+
+** Voting Procedure
+
+The voting procedure as written in "iv" above is not incompletely specified.  In particular:
+
+- What is to occur if a round of voting ends in more than one
+  candidate with the same and fewest number of votes?
+
+One scenario is to remove all "losing tied" candidates.  This can
+leave the field with two few candidates to continue.  For example a
+three candidate field with a non-majority leader and two tied for
+second place.  Removing both would lead to a winner that may not have
+a majority.
+
+Another scenario is to arbitrarily pick choose one of the "loosing
+tied" candidates and continue with the next voting round.  This may
+lead to different outcomes depending on the nature of the choice.
+
+A Wikipedia article on Instant-runoff voting, from which it looks like
+the above description was taken has a [[https://en.wikipedia.org/wiki/Instant-runoff_voting#Handling_ties][broken link]] referencing rules
+for breaking such ties.  But it does suggest one can remove all of the
+lowest ranking candidates such that their combined votes are less than
+the remaining other lowest candidates.  This doesn't solve the first
+scenario.
+
+
